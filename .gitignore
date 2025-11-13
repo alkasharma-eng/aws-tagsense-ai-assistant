@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# IntelliJ / PyCharm
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment & API Keys
+.env
+*.env
+
+# Streamlit config
+.streamlit/
+
+# Misc
+*.log
