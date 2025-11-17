@@ -1,0 +1,101 @@
+{# Remediation Plan Template #}
+**AWS Tagging Remediation Plan**
+
+**Current State:**
+- Region: {{ region }}
+- Untagged Resources: {{ total_untagged }}
+- Resource Types Affected: {{ resource_types | join(', ') if resource_types else 'Multiple types' }}
+
+{% if untagged_resources %}
+**Resources Requiring Tags:**
+{% for resource in untagged_resources[:10] %}
+{{ loop.index }}. {{ resource.type }}: `{{ resource.id }}`
+   {% if resource.name %}- Name: {{ resource.name }}{% endif %}
+   - State: {{ resource.state }}
+   {% if resource.region %}- Region: {{ resource.region }}{% endif %}
+{% endfor %}
+{% if untagged_resources | length > 10 %}
+... and {{ untagged_resources|length - 10 }} more resources
+{% endif %}
+{% endif %}
+
+**Organization Standards:**
+{% if tagging_standards %}
+Required tags for all resources:
+{% for tag in tagging_standards %}
+- **{{ tag.key }}**: {{ tag.description }}{% if tag.example %} (Example: {{ tag.example }}){% endif %}
+{% endfor %}
+{% else %}
+(To be defined - will recommend standard tags)
+{% endif %}
+
+**Remediation Approach:**
+Scale: {{ scale | default('medium') }}
+{% if scale == 'small' %}
+(< 50 resources - manual tagging recommended)
+{% elif scale == 'medium' %}
+(50-500 resources - AWS CLI scripting recommended)
+{% elif scale == 'large' %}
+(> 500 resources - automation framework required)
+{% endif %}
+
+**Please provide a detailed remediation plan with:**
+
+1. **Pre-Remediation Steps:**
+   - How to inventory and classify all untagged resources
+   - How to identify correct tag values (owner, cost center, etc.)
+   - How to back up current state
+   - How to test tagging on a subset first
+
+2. **Remediation Methods:**
+
+   **For EC2 Instances:**
+   - AWS Console steps (for manual tagging)
+   - AWS CLI commands (for scriptable tagging)
+   - Tag Editor bulk operations
+   - CloudFormation/Terraform examples (for IaC)
+
+   **For Lambda Functions:**
+   - Console tagging process
+   - AWS CLI commands
+   - SAM/Serverless Framework approaches
+
+   **For Other Resources:**
+   - Resource-specific tagging commands
+   - Best practices per resource type
+
+3. **Sample Commands:**
+   Provide ready-to-use AWS CLI commands for the most common scenarios.
+   Include:
+   - Single resource tagging
+   - Bulk tagging by resource type
+   - Region-specific tagging
+   - Tag validation queries
+
+4. **Governance & Prevention:**
+   - How to set up AWS Tag Policies
+   - AWS Config Rules to detect untagged resources
+   - Service Control Policies (SCPs) to enforce tagging at creation
+   - CI/CD pipeline tag validation
+
+5. **Validation & Verification:**
+   - How to verify tags were applied correctly
+   - Queries to find remaining untagged resources
+   - Dashboard/reports to track progress
+
+6. **Rollback Plan:**
+   - How to undo tags if needed
+   - How to modify incorrect tags in bulk
+
+7. **Timeline:**
+   - Phase 1 (Week 1): Critical production resources
+   - Phase 2 (Week 2-3): All production resources
+   - Phase 3 (Week 4): Non-production resources
+   - Ongoing: Automated enforcement
+
+**Output Format:**
+Make all commands copy-paste ready with placeholders clearly marked (e.g., <ACCOUNT_ID>, <REGION>).
+Include error handling and validation steps.
+Prioritize by business impact - critical resources first.
+
+Focus on making this plan immediately actionable for a DevOps team.

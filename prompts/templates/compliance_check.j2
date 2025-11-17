@@ -1,0 +1,64 @@
+{# Compliance Check Template #}
+**AWS Compliance Audit Report Request**
+
+**Environment Details:**
+- AWS Account: {{ account_id | default('Not specified') }}
+- Regions Scanned: {{ regions | join(', ') if regions else region }}
+- Scan Date: {{ scan_date }}
+
+**Untagged Resources Found:**
+- Total Untagged: {{ total_untagged }}
+{% if resource_breakdown %}
+Resource Breakdown:
+{% for resource in resource_breakdown %}
+  - {{ resource.type }}: {{ resource.count }} untagged ({{ resource.percentage }}% of total {{ resource.type }}s)
+{% endfor %}
+{% endif %}
+
+**Compliance Frameworks:**
+{% if compliance_frameworks %}
+This organization is subject to: {{ compliance_frameworks | join(', ') }}
+{% else %}
+Standard AWS best practices apply
+{% endif %}
+
+**Critical Resources Without Tags:**
+{% if critical_resources %}
+{% for resource in critical_resources %}
+- {{ resource.type }}: {{ resource.id }}
+  - Environment: {{ resource.environment | default('UNKNOWN - CRITICAL ISSUE') }}
+  - Data Classification: {{ resource.data_classification | default('UNKNOWN - COMPLIANCE RISK') }}
+  - Owner: {{ resource.owner | default('UNKNOWN - ACCOUNTABILITY ISSUE') }}
+{% endfor %}
+{% else %}
+(To be identified during scan)
+{% endif %}
+
+**Required Analysis:**
+
+1. **Compliance Risk Rating**: Rate the overall compliance risk as Critical/High/Medium/Low and explain why.
+
+2. **Framework-Specific Gaps**: For each applicable compliance framework, identify specific violations:
+   {% if 'SOC2' in compliance_frameworks %}
+   - **SOC 2**: Asset tracking and change management gaps
+   {% endif %}
+   {% if 'HIPAA' in compliance_frameworks %}
+   - **HIPAA**: PHI identification and data classification issues
+   {% endif %}
+   {% if 'PCI' in compliance_frameworks or 'PCI-DSS' in compliance_frameworks %}
+   - **PCI-DSS**: Cardholder data environment scope definition problems
+   {% endif %}
+   {% if 'ISO27001' in compliance_frameworks %}
+   - **ISO 27001**: Information asset classification deficiencies
+   {% endif %}
+
+3. **Audit Readiness**: How would these tagging gaps impact an upcoming compliance audit?
+
+4. **Prioritized Remediation**: List specific actions in order of compliance criticality:
+   - **Immediate (24-48 hours)**
+   - **Short-term (1-2 weeks)**
+   - **Medium-term (1-3 months)**
+
+5. **Policy Recommendations**: What AWS tag policies or Config rules should we implement to prevent this?
+
+Provide a structured compliance report suitable for presenting to security and compliance teams.

@@ -1,0 +1,42 @@
+{# Tagging Guidance Template #}
+I've scanned the AWS environment and found the following untagged resources:
+
+**Scan Results:**
+- Region: {{ region }}
+- Total Untagged Resources: {{ total_untagged }}
+{% if resource_types %}
+- Resource Types:
+  {% for resource_type, count in resource_types.items() %}
+  - {{ resource_type }}: {{ count }} untagged
+  {% endfor %}
+{% endif %}
+
+{% if sample_resources %}
+**Sample Untagged Resources:**
+{% for resource in sample_resources[:5] %}
+- {{ resource.type }}: {{ resource.id }}{% if resource.name %} ({{ resource.name }}){% endif %} - State: {{ resource.state }}
+{% endfor %}
+{% if sample_resources|length > 5 %}
+... and {{ sample_resources|length - 5 }} more
+{% endif %}
+{% endif %}
+
+{% if compliance_frameworks %}
+**Compliance Requirements:**
+This organization must comply with: {{ compliance_frameworks|join(', ') }}
+{% endif %}
+
+**Please provide:**
+
+1. **Risk Assessment**: What are the top 3 risks of having these untagged resources?
+
+2. **Recommended Tagging Scheme**: Propose a comprehensive tagging strategy including:
+   - Mandatory tags (must be present on all resources)
+   - Recommended tags (should be present for proper governance)
+   - Optional tags (nice to have for enhanced tracking)
+
+3. **Quick Wins**: What are 2-3 immediate actions we can take today to improve tagging hygiene?
+
+4. **Long-term Strategy**: How should we approach tagging at scale across the organization?
+
+Focus on practical, actionable guidance specific to our AWS environment.

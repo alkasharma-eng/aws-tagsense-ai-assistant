@@ -63,7 +63,7 @@ def main():
             print(f"  - {info['InstanceId']} (state: {info['State']})")
 
         # Apply tags if requested
-        if args.apply-tag:
+        if args.apply_tag:
             if not tag_key or not tag_value:
                 raise ValueError("--apply-tag requires --tag KEY=VALUE")
             print("\n[auto-tagger] Applying tag to untagged instances...")

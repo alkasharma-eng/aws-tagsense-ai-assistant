@@ -1,0 +1,88 @@
+{# Cost Analysis Template #}
+**AWS Cost Optimization Analysis - Tagging Impact**
+
+**Current Tagging Status:**
+- Total Resources Scanned: {{ total_resources }}
+- Untagged Resources: {{ total_untagged }} ({{ (total_untagged / total_resources * 100) | round(1) }}%)
+- Resources with Tags: {{ total_resources - total_untagged }}
+
+{% if missing_cost_tags %}
+**Missing Cost Management Tags:**
+{% for tag_key, resource_count in missing_cost_tags.items() %}
+- {{ resource_count }} resources missing "{{ tag_key }}" tag
+{% endfor %}
+{% endif %}
+
+**Resource Inventory:**
+{% if ec2_instances %}
+- EC2 Instances: {{ ec2_instances.total }}
+  - Untagged: {{ ec2_instances.untagged }} (potential monthly cost: ${{ ec2_instances.estimated_monthly_cost }})
+  - Running: {{ ec2_instances.running }}
+  - Stopped: {{ ec2_instances.stopped }}
+{% endif %}
+
+{% if lambda_functions %}
+- Lambda Functions: {{ lambda_functions.total }}
+  - Untagged: {{ lambda_functions.untagged }}
+  - Active: {{ lambda_functions.active }}
+{% endif %}
+
+{% if rds_databases %}
+- RDS Databases: {{ rds_databases.total }}
+  - Untagged: {{ rds_databases.untagged }} (HIGH COST IMPACT)
+{% endif %}
+
+**Cost Allocation Challenges:**
+{% if challenges %}
+{% for challenge in challenges %}
+- {{ challenge }}
+{% endfor %}
+{% else %}
+- Cannot allocate {{ (total_untagged / total_resources * 100) | round(0) }}% of infrastructure costs to cost centers
+- No Project-level cost tracking possible for untagged resources
+- Environment-based cost separation (dev vs. prod) incomplete
+- Chargeback/showback reporting gaps
+{% endif %}
+
+**Required Analysis:**
+
+1. **Cost Visibility Impact**: Estimate the monthly AWS spend that cannot be properly allocated due to missing tags.
+   Consider typical costs for:
+   - EC2 instances (compute)
+   - RDS databases (data storage)
+   - Lambda functions (serverless)
+   - EBS volumes (storage)
+
+2. **Waste Identification**: What types of cost waste are hidden by poor tagging?
+   Examples:
+   - Forgotten dev resources running 24/7
+   - Orphaned resources from deleted projects
+   - Over-provisioned instances not tied to active projects
+   - Idle databases without clear ownership
+
+3. **Recommended Cost Tags**: Define essential tags for cost management:
+   - **CostCenter**: For chargeback
+   - **Project**: For project budget tracking
+   - **Environment**: For dev/prod cost separation
+   - **Owner**: For cost accountability
+   - **Expiration**: For temporary resource cleanup
+
+4. **Cost Optimization Opportunities**: Based on better tagging, what cost optimizations become possible?
+   - Identify right-sizing candidates
+   - Find candidates for Reserved Instances/Savings Plans
+   - Enable automated start/stop schedules
+   - Implement cost anomaly detection
+
+5. **ROI Calculation**: Estimate potential monthly savings from:
+   - Improved cost allocation (better budget decisions)
+   - Identification and termination of orphaned resources
+   - Environment-based scheduling (stop dev resources nights/weekends)
+   - Better Reserved Instance planning
+
+6. **Implementation Steps**: How to set up tag-based cost management:
+   - Configuring AWS Cost Explorer with tags
+   - Creating tag-based AWS Budgets
+   - Setting up cost allocation tags
+   - Building automated cost reports
+
+Provide specific, quantified recommendations focused on improving cost visibility and reducing waste.

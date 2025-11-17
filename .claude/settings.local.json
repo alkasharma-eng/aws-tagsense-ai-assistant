@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s /b *.py *.txt *.md *.json *.yaml 2)",
+      "Bash(nul)",
+      "Bash(dir /b)",
+      "Bash(find:*)",
+      "Bash(git rm:*)",
+      "Bash(llm_backends__init__.py)",
+      "Bash(memory__init__.py)",
+      "Bash(config__init__.py)",
+      "Bash(tests__init__.py)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

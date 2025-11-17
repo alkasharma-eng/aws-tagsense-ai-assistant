@@ -1,0 +1,221 @@
+{
+  "scenarios": [
+    {
+      "id": "scenario_1",
+      "title": "Production EC2 instances without Environment tags",
+      "context": {
+        "resource_type": "EC2 Instance",
+        "resource_id": "i-0123456789abcdef0",
+        "current_state": "running",
+        "existing_tags": [],
+        "region": "us-east-1",
+        "organization_type": "Healthcare (HIPAA compliant)"
+      },
+      "user_question": "We found 15 EC2 instances in production without any tags. What's the risk?",
+      "expected_response_elements": [
+        "Immediate compliance risk for HIPAA audit trail",
+        "Cannot track which instances contain PHI",
+        "Cost allocation impossible - unknown which team/project owns these",
+        "Security risk - can't apply tag-based IAM policies",
+        "Recommend immediate mandatory tags: Environment, Owner, DataClassification, CostCenter"
+      ]
+    },
+    {
+      "id": "scenario_2",
+      "title": "Lambda functions without owner tags",
+      "context": {
+        "resource_type": "Lambda Function",
+        "resource_count": 47,
+        "existing_tags": {"Environment": "production"},
+        "missing_tags": ["Owner", "CostCenter", "Project"],
+        "organization_type": "Financial Services (SOC 2)"
+      },
+      "user_question": "Our Lambda functions have Environment tags but no Owner. Why does this matter?",
+      "expected_response_elements": [
+        "SOC 2 requires change tracking and accountability",
+        "Cannot identify responsible team during incidents",
+        "Cost chargeback impossible without ownership",
+        "Recommend adding Owner (team email) and CostCenter tags",
+        "Provide AWS CLI command for bulk Lambda tagging",
+        "Suggest implementing tag policy to prevent this"
+      ]
+    },
+    {
+      "id": "scenario_3",
+      "title": "Mixed tagging standards across teams",
+      "context": {
+        "issue": "Inconsistent tag keys",
+        "examples": [
+          {"team": "Team A", "uses": "environment", "values": ["dev", "staging", "prod"]},
+          {"team": "Team B", "uses": "Environment", "values": ["development", "production"]},
+          {"team": "Team C", "uses": "env", "values": ["d", "s", "p"]}
+        ]
+      },
+      "user_question": "Different teams use different tag keys and values for the same thing. How do we fix this?",
+      "expected_response_elements": [
+        "Breaks cost reporting and AWS Config rules",
+        "Prevents effective tag-based policies",
+        "Recommend standardizing on PascalCase: Environment",
+        "Standardize values: dev | staging | prod",
+        "Create organization-wide tagging standard document",
+        "Implement AWS Tag Policies to enforce standards",
+        "Provide migration plan to rename existing tags"
+      ]
+    },
+    {
+      "id": "scenario_4",
+      "title": "Cost allocation for multi-tenant application",
+      "context": {
+        "resource_type": "RDS Database",
+        "use_case": "Multi-tenant SaaS application",
+        "current_tags": {"Application": "customer-portal"},
+        "challenge": "Need to allocate DB costs across customers"
+      },
+      "user_question": "How should we tag resources to track costs per customer in our multi-tenant app?",
+      "expected_response_elements": [
+        "Add Customer or TenantID tag for customer-specific resources",
+        "Use CostCenter for shared infrastructure",
+        "Enable AWS Cost Allocation Tags in Billing console",
+        "Set up Cost Explorer reports by Customer tag",
+        "Consider AWS Split Cost Allocation Data for shared resources",
+        "Provide tag structure example for multi-tenant architecture"
+      ]
+    },
+    {
+      "id": "scenario_5",
+      "title": "Automated tagging for ephemeral resources",
+      "context": {
+        "resource_type": "EC2 Auto Scaling Group",
+        "challenge": "Instances created/destroyed automatically",
+        "current_approach": "Manual tagging (doesn't work)"
+      },
+      "user_question": "How do we tag EC2 instances that are created automatically by Auto Scaling?",
+      "expected_response_elements": [
+        "Configure tags in Auto Scaling Group launch template",
+        "Tags propagate automatically to new instances",
+        "Use CloudFormation/Terraform for infrastructure as code",
+        "Implement Lambda function triggered by EC2 creation events",
+        "Set up AWS Config remediation to auto-tag untagged instances",
+        "Provide example Auto Scaling Group configuration with tags"
+      ]
+    },
+    {
+      "id": "scenario_6",
+      "title": "Security incident investigation hampered by missing tags",
+      "context": {
+        "incident": "Suspicious API calls from EC2 instance",
+        "challenge": "Can't identify instance owner or purpose",
+        "security_framework": "ISO 27001"
+      },
+      "user_question": "During a security incident, we couldn't identify who owned the compromised instance because it had no tags. How do we prevent this?",
+      "expected_response_elements": [
+        "ISO 27001 requires asset ownership and classification",
+        "Mandatory security tags: Owner, Application, DataClassification, Environment",
+        "Implement SCP to deny EC2 RunInstances without required tags",
+        "Set up AWS Config rule: required-tags",
+        "Create incident response runbook that leverages tags",
+        "Recommend weekly compliance reports showing untagged resources",
+        "Provide example SCP policy for tag enforcement"
+      ]
+    },
+    {
+      "id": "scenario_7",
+      "title": "Cost spike investigation",
+      "context": {
+        "issue": "Unexpected $15,000 monthly increase in AWS bill",
+        "resources": "New EC2 instances and RDS databases",
+        "tags": "No CostCenter, Project, or Owner tags"
+      },
+      "user_question": "Our bill increased by $15K but we can't figure out which team or project caused it because resources aren't tagged. What now?",
+      "expected_response_elements": [
+        "Use AWS Cost Explorer to identify expensive untagged resources",
+        "Check CloudTrail to find who created the resources",
+        "Retroactively tag resources based on CloudTrail data",
+        "Implement tag policy to prevent future untagged resource creation",
+        "Set up AWS Budgets with tag-based alerts",
+        "Recommend cost anomaly detection",
+        "Provide query to find top 10 untagged resources by cost"
+      ]
+    },
+    {
+      "id": "scenario_8",
+      "title": "Compliance audit preparation",
+      "context": {
+        "audit_type": "SOC 2 Type II",
+        "timeline": "2 weeks until audit",
+        "current_state": "40% of resources untagged",
+        "auditor_requirements": ["Asset inventory", "Change tracking", "Access control"]
+      },
+      "user_question": "We have a SOC 2 audit in 2 weeks and 40% of our resources are untagged. What should we prioritize?",
+      "expected_response_elements": [
+        "Focus on production resources first",
+        "Mandatory tags for SOC 2: Environment, Owner, DataClassification, Application",
+        "Week 1: Tag all production EC2, RDS, Lambda, S3",
+        "Week 2: Tag remaining production resources, critical dev resources",
+        "Use AWS Tag Editor for bulk operations",
+        "Generate asset inventory report from AWS Config",
+        "Set up AWS Config Rules to prove ongoing compliance",
+        "Provide AWS CLI scripts for emergency bulk tagging",
+        "Create compliance dashboard for auditor review"
+      ]
+    },
+    {
+      "id": "scenario_9",
+      "title": "Migration to Infrastructure as Code",
+      "context": {
+        "current_state": "Manually created resources with inconsistent tags",
+        "goal": "Migrate to Terraform",
+        "challenge": "How to handle existing tags"
+      },
+      "user_question": "We're migrating to Terraform. Should we fix tagging before or after the migration?",
+      "expected_response_elements": [
+        "Fix critical tags NOW - don't migrate technical debt",
+        "Document current tag inventory before migration",
+        "Define tagging standards in Terraform variables",
+        "Use Terraform modules with default tags",
+        "Import existing resources into Terraform with correct tags",
+        "Use terraform-compliance to enforce tagging rules",
+        "Provide example Terraform module with default tags",
+        "Set up pre-commit hooks to validate tags in IaC"
+      ]
+    },
+    {
+      "id": "scenario_10",
+      "title": "Department chargeback implementation",
+      "context": {
+        "company_size": "1000 employees",
+        "departments": ["Engineering", "Data Science", "Marketing", "Finance"],
+        "current_state": "Centralized AWS billing, no chargeback",
+        "goal": "Implement monthly chargeback by department"
+      },
+      "user_question": "We need to implement chargeback to departments. What tagging structure do we need?",
+      "expected_response_elements": [
+        "Primary tag: Department or CostCenter",
+        "Secondary tags: Project, Environment for drill-down",
+        "Enable cost allocation tags in AWS Billing console",
+        "Tag ALL resources - even $1/month costs add up",
+        "Set up shared resource tagging for common infrastructure",
+        "Use AWS Split Cost Allocation for shared services",
+        "Create monthly Cost and Usage Report filtered by CostCenter",
+        "Implement tag compliance dashboard - 100% tagged = accurate chargeback",
+        "Provide example chargeback report structure",
+        "Recommend enforcement: No tags = charged to 'Unallocated' (CEO oversight)"
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2025-01-15",
+    "purpose": "Few-shot learning examples for AWS TagSense AI assistant",
+    "use_cases_covered": [
+      "Compliance risk assessment",
+      "Cost optimization",
+      "Security incident response",
+      "Audit preparation",
+      "IaC migration",
+      "Chargeback implementation",
+      "Tag standardization",
+      "Automated tagging"
+    ]
+  }
+}
